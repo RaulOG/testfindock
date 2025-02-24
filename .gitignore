@@ -5,3 +5,5 @@ bootstrap/cache
 database/database.sqlite
 
 public/build
+
+vendor
