@@ -1,6 +1,10 @@
 FROM php:8.3-fpm
 
-RUN apt-get update && apt-get install -y unzip
+RUN apt-get update && apt-get install -y unzip curl \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')" && \
     curl -sS https://getcomposer.org/installer -o composer-setup.php && \
