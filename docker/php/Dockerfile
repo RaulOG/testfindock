@@ -16,3 +16,20 @@ RUN EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig"
     fi && \
     php composer-setup.php --quiet --install-dir=/usr/local/bin --filename=composer && \
     rm composer-setup.php
+
+ARG UID=1000
+ARG GID=1000
+
+RUN if getent group ${GID}; then \
+      group_name=$(getent group ${GID} | cut -d: -f1); \
+      useradd -m -u ${UID} -g ${GID} -s /bin/bash www; \
+    else \
+      groupadd -g ${GID} www && \
+      useradd -m -u ${UID} -g www -s /bin/bash www; \
+      group_name=www; \
+    fi
+
+RUN sed -i "s/user = www-data/user = www/g" /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i "s/group = www-data/group = $group_name/g" /usr/local/etc/php-fpm.d/www.conf
+
+USER www-data
